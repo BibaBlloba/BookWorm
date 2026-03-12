@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BookWorm
 {
-    public class LibraryForm : Form
+    public partial class LibraryForm : Form
     {
         private LibraryManager libraryManager;
         private TextBox authorTextBox;
@@ -30,19 +30,16 @@ namespace BookWorm
             {
                 Location = new System.Drawing.Point(10, 10),
                 Width = 150,
-                PlaceholderText = "Автор"
             };
             titleTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(170, 10),
                 Width = 150,
-                PlaceholderText = "Название"
             };
             yearTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(330, 10),
                 Width = 80,
-                PlaceholderText = "Год"
             };
             addBookButton = new Button
             {
@@ -62,7 +59,6 @@ namespace BookWorm
             {
                 Location = new System.Drawing.Point(10, 70),
                 Width = 200,
-                PlaceholderText = "Поиск"
             };
             searchButton = new Button
             {
@@ -161,12 +157,6 @@ namespace BookWorm
                 booksListBox.Items.Add($"{book.Author} - {book.Title} ({book.Year})");
             }
         }
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LibraryForm());
-        }
+
     }
 }
