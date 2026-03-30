@@ -131,14 +131,19 @@ namespace tst
                 MessageBox.Show("Выберите книгу для удаления!");
                 return;
             }
+
             string selectedItem = booksListBox.SelectedItem.ToString();
-            string[] parts = selectedItem.Split(new[] { '-' }, StringSplitOptions.None);
-            if (parts.Length >= 2)
+            int separatorIndex = selectedItem.IndexOf(" - ");
+
+            if (separatorIndex != -1)
             {
-                string author = parts[0].Trim();
-                string title = parts[1].Trim();
-                var bookToRemove = libraryManager.Books.Find(b => b.Author == author && b.Title
-                == title);
+                string author = selectedItem.Substring(0, separatorIndex).Trim();
+                string rest = selectedItem.Substring(separatorIndex + 3);
+
+                int yearStartIndex = rest.LastIndexOf(" (");
+                string title = yearStartIndex != -1 ? rest.Substring(0, yearStartIndex).Trim() : rest.Trim();
+
+                var bookToRemove = libraryManager.Books.Find(b => b.Author == author && b.Title == title);
                 if (bookToRemove != null)
                 {
                     try
@@ -153,6 +158,7 @@ namespace tst
                 }
             }
         }
+
         private void SearchButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(searchTextBox.Text))
