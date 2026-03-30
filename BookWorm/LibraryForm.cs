@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using System;
+using System.Runtime.InteropServices;
+using BookWorm;
 
-namespace BookWorm
+namespace tst
 {
     public partial class LibraryForm : Form
     {
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, string lParam);
+
+        private const int EM_SETCUEBANNER = 0x1501;
+
         private LibraryManager libraryManager;
         private TextBox authorTextBox;
         private TextBox titleTextBox;
@@ -29,17 +29,17 @@ namespace BookWorm
             authorTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(10, 10),
-                Width = 150,
+                Width = 150
             };
             titleTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(170, 10),
-                Width = 150,
+                Width = 150
             };
             yearTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(330, 10),
-                Width = 80,
+                Width = 80
             };
             addBookButton = new Button
             {
@@ -58,7 +58,7 @@ namespace BookWorm
             searchTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(10, 70),
-                Width = 200,
+                Width = 200
             };
             searchButton = new Button
             {
@@ -83,6 +83,16 @@ namespace BookWorm
             this.Controls.Add(booksListBox);
             libraryManager = new LibraryManager();
             UpdateBooksList();
+
+            this.Load += (s, e) => {
+                SendMessage(authorTextBox.Handle, EM_SETCUEBANNER, 0, "Автор");
+                SendMessage(titleTextBox.Handle, EM_SETCUEBANNER, 0, "Название");
+                SendMessage(yearTextBox.Handle, EM_SETCUEBANNER, 0, "Год");
+                SendMessage(searchTextBox.Handle, EM_SETCUEBANNER, 0, "Поиск");
+            };
+            this.Shown += (s, e) => {
+                this.ActiveControl = null;
+            };
         }
         private void UpdateBooksList()
         {
@@ -121,14 +131,19 @@ namespace BookWorm
                 MessageBox.Show("Выберите книгу для удаления!");
                 return;
             }
+
             string selectedItem = booksListBox.SelectedItem.ToString();
-            string[] parts = selectedItem.Split(new[] { '-' }, StringSplitOptions.None);
-            if (parts.Length >= 2)
+            int separatorIndex = selectedItem.IndexOf(" - ");
+
+            if (separatorIndex != -1)
             {
-                string author = parts[0].Trim();
-                string title = parts[1].Trim();
-                var bookToRemove = libraryManager.Books.Find(b => b.Author == author && b.Title
-                == title);
+                string author = selectedItem.Substring(0, separatorIndex).Trim();
+                string rest = selectedItem.Substring(separatorIndex + 3);
+
+                int yearStartIndex = rest.LastIndexOf(" (");
+                string title = yearStartIndex != -1 ? rest.Substring(0, yearStartIndex).Trim() : rest.Trim();
+
+                var bookToRemove = libraryManager.Books.Find(b => b.Author == author && b.Title == title);
                 if (bookToRemove != null)
                 {
                     try
@@ -143,6 +158,7 @@ namespace BookWorm
                 }
             }
         }
+
         private void SearchButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(searchTextBox.Text))
