@@ -1,4 +1,4 @@
-﻿namespace BookWorm
+﻿namespace tst
 {
     partial class LibraryForm
     {

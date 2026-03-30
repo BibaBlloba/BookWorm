@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using System;
+using System.Runtime.InteropServices;
+using BookWorm;
 
-namespace BookWorm
+namespace tst
 {
     public partial class LibraryForm : Form
     {
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, string lParam);
+
+        private const int EM_SETCUEBANNER = 0x1501;
+
         private LibraryManager libraryManager;
         private TextBox authorTextBox;
         private TextBox titleTextBox;
@@ -29,17 +29,17 @@ namespace BookWorm
             authorTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(10, 10),
-                Width = 150,
+                Width = 150
             };
             titleTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(170, 10),
-                Width = 150,
+                Width = 150
             };
             yearTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(330, 10),
-                Width = 80,
+                Width = 80
             };
             addBookButton = new Button
             {
@@ -58,7 +58,7 @@ namespace BookWorm
             searchTextBox = new TextBox
             {
                 Location = new System.Drawing.Point(10, 70),
-                Width = 200,
+                Width = 200
             };
             searchButton = new Button
             {
@@ -83,6 +83,16 @@ namespace BookWorm
             this.Controls.Add(booksListBox);
             libraryManager = new LibraryManager();
             UpdateBooksList();
+
+            this.Load += (s, e) => {
+                SendMessage(authorTextBox.Handle, EM_SETCUEBANNER, 0, "Автор");
+                SendMessage(titleTextBox.Handle, EM_SETCUEBANNER, 0, "Название");
+                SendMessage(yearTextBox.Handle, EM_SETCUEBANNER, 0, "Год");
+                SendMessage(searchTextBox.Handle, EM_SETCUEBANNER, 0, "Поиск");
+            };
+            this.Shown += (s, e) => {
+                this.ActiveControl = null;
+            };
         }
         private void UpdateBooksList()
         {
