@@ -109,9 +109,6 @@ namespace BookWorm
             if (!Categories.Any())
             {
                 Categories.Add("Без категории");
-                Categories.Add("Художественная литература");
-                Categories.Add("Научная литература");
-                Categories.Add("Техническая литература");
                 SaveCategories();
             }
         }
