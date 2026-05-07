@@ -11,11 +11,14 @@ namespace BookWorm
         public string Author { get; set; }
         public string Title { get; set; }
         public string Year { get; set; }
-        public Book(string author, string title, string year)
+        public string Category { get; set; }
+
+        public Book(string author, string title, string year, string category = "Без категории")
         {
             Author = author;
             Title = title;
             Year = year;
+            Category = string.IsNullOrWhiteSpace(category) ? "Без категории" : category;
         }
     }
 }
