@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -33,19 +34,24 @@ namespace UnitTestProject
         private Button BtnSearch => FindButton("Искать");
         private ComboBox CategoryList1 => FindComboBox(0);
 
+        private TextBox FindTextBox(int index) => mainWindow.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit))[index].AsTextBox();
+        private Button FindButton(string text) => mainWindow.FindAllDescendants(cf => cf.ByControlType(ControlType.Button)).FirstOrDefault(b => b.Name.Contains(text))?.AsButton();
+        private ComboBox FindComboBox(int index) => mainWindow.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.ComboBox))[index]?.AsComboBox();
+        private void Sleep(int ms) => System.Threading.Thread.Sleep(500);
+
         [TestInitialize]
         public void TestInitialize()
         {
-            // Запуск приложения
             var appPath = @"..\..\..\BookWorm\bin\Debug\BookWorm.exe";
             var psi = new ProcessStartInfo(appPath);
+            File.Delete(@"books.txt");
+            File.Delete(@"categories.txt");
             application = Application.Launch(psi);
             automation = new UIA3Automation();
 
-            // Ожидание загрузки окна
             Thread.Sleep(2000);
             mainWindow = application.GetMainWindow(automation, TimeSpan.FromSeconds(10));
-            Assert.IsNotNull(mainWindow, "Главное окно не найдено");
+            Assert.IsNotNull(mainWindow, "Окно не найдено");
         }
 
         [TestCleanup]
@@ -64,19 +70,12 @@ namespace UnitTestProject
         [TestMethod]
         public void TK13_AddCategory()
         {
-            NewCategoryBox.Text = "Новая категория";
+            NewCategoryBox.Text = "Классика";
             BtnAddCategory.Click();
+            CategoryList1.Click();
+            Sleep(500);
 
-            bool exists = CategoryList1.Items.Any(item => item.Name == "Без категории");
-            Assert.IsTrue(exists);
-
-            System.Threading.Thread.Sleep(10000);
+            Assert.IsTrue(CategoryList1.Items.Any(item => item.Name == "Классика"));
         }
-
-        private TextBox FindTextBox(int index) => mainWindow.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit))[index].AsTextBox();
-        private Button FindButton(string text) => mainWindow.FindAllDescendants(cf => cf.ByControlType(ControlType.Button)).FirstOrDefault(b => b.Name.Contains(text))?.AsButton();
-        private ComboBox FindComboBox(int index) => mainWindow.FindAllDescendants(cf => cf.ByControlType(ControlType.ComboBox)).ElementAtOrDefault(index)?.AsComboBox();
-        //private ComboBox FindComboBox(string text) => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId(text)).AsComboBox();
-
     }
 }
