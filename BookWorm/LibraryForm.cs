@@ -72,7 +72,8 @@ namespace tst
             {
                 Location = new System.Drawing.Point(10, 70),
                 Width = 220,
-                DropDownStyle = ComboBoxStyle.DropDownList
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Name = "CategoryList1"
             };
             filterButton = new Button
             {
