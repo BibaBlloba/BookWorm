@@ -128,7 +128,11 @@ namespace UnitTestProject
             CategoryList1.Select("Классика");
 
             BtnAddBook.Invoke();
+<<<<<<< HEAD
             Sleep(500);
+=======
+            Sleep(1000);
+>>>>>>> 5a209c9f08655730f86d1fece8213ea5e9425020
             Assert.IsTrue(BooksListBox.Items.Any(item => item.Name.Contains("Александр Пушкин - Евгений Онегин (1833) [Классика]")));
         }
         [TestMethod]
